@@ -2,22 +2,12 @@
 """
 Created on Sun Feb  2 18:00:10 2020
 
-@author: Charles
+@author: Luke
 """
 
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import expit
-
-#this is where i bring in my data to use for the neural network. 
-#So far I cannot get it to predict arsenic concentrations from field parameters accurately
-df = pd.read_csv(r'C:\Users\Charles\Documents\MF_analytical_data_AND_field_Params.csv')
-As = df['Arsenic, Dissolved']
-del df['Location'], df['CollectDate'], df['Unnamed: 0']
-#df = df[['ORP','pH','Cond','Turb','DO']]
-
-###############################################################################
 
 def sigmoid(x):
     return expit(x)
@@ -29,7 +19,7 @@ class NeuralNetwork:
     def __init__(self, x, y):
         self.input      = x
         self.weights1   = np.random.rand(self.input.shape[1],self.input.shape[0]) #equal to [columns of X, rows of X]
-        self.weights2   = np.random.rand(self.input.shape[0]) #equal to [rows of X]
+        self.weights2   = np.random.rand(self.input.shape[0],1) #equal to [rows of X, 1]
         self.y          = y
         self.output     = np.zeros(self.y.shape)
 
@@ -48,12 +38,17 @@ class NeuralNetwork:
 
 
 if __name__ == "__main__":
-    #define your X and Y here (neural network will use )
-    X = np.array(df)
-    y = np.array(As)
+    #run with this X an y data for it to make sense
+
+    X = np.array([[0,0,1,1],
+              [0,1,1,1],
+              [1,0,1,1],
+              [1,1,1,1]])
+    y = np.array([[0],[1],[1],[0]])
+
     
     nn = NeuralNetwork(X,y)
-
+    
     for i in range(1000):
         nn.feedforward()
         nn.backprop()
@@ -61,5 +56,5 @@ if __name__ == "__main__":
 ###############################################################################
 
     #the better the neural network is at predicting y the closer to a 1:1 ratio this plot should have
-    print(nn.output)
+    print(nn.output.T)
     plt.scatter(nn.output,y)
